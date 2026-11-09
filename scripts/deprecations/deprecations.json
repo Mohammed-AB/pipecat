@@ -4964,6 +4964,17 @@
       "location": "pipecat/services/tts_service.py"
     },
     {
+      "subject": "TTSService._resampler",
+      "module": "pipecat.services.tts_service",
+      "kind": "property",
+      "deprecated_in": "1.16.0",
+      "removed_in": "2.0.0",
+      "relation": "none",
+      "replacement": null,
+      "message": "`TTSService._resampler` is deprecated since 1.16.0 and will be removed in 2.0.0. No replacement.",
+      "location": "pipecat/services/tts_service.py"
+    },
+    {
       "subject": "TTSService.add_text_transformer.aggregation_type",
       "module": "pipecat.services.tts_service",
       "kind": "parameter",
