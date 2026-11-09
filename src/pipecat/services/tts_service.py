@@ -2327,20 +2327,16 @@ class TTSService(AIService):
         One resampler converts all of a context's audio, so the audio stays
         continuous across frames however far apart the provider sends them.
         """
-        if playback.resampler and frame.sample_rate != playback.resampler_rate:
-            # The audio at the previous rate ends here.
+        if frame.sample_rate == self.sample_rate:
+            return
+        resampler = playback.resampler
+        if not resampler or frame.sample_rate != playback.resampler_rate:
+            # A resampler converts from one rate, so audio at another rate gets a new one.
             await self._push_resampler_tail(context_id, playback)
-        if frame.sample_rate != self.sample_rate:
-            await self._resample_audio_frame(frame, playback)
-
-    async def _resample_audio_frame(self, frame: TTSAudioRawFrame, playback: _AudioContextPlayback):
-        """Convert an audio frame to the service's sample rate with the context's resampler."""
-        if not playback.resampler:
-            playback.resampler = create_stream_resampler(clear_after_secs=None)
+            resampler = create_stream_resampler(clear_after_secs=None)
+            playback.resampler = resampler
             playback.resampler_rate = frame.sample_rate
-        frame.audio = await playback.resampler.resample(
-            frame.audio, frame.sample_rate, self.sample_rate
-        )
+        frame.audio = await resampler.resample(frame.audio, frame.sample_rate, self.sample_rate)
         frame.sample_rate = self.sample_rate
         frame.num_frames = len(frame.audio) // (2 * frame.num_channels)
 
